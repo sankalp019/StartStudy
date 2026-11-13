@@ -1,60 +1,90 @@
-# StartStudy
+# StartStudy 📚
 
-> A minimal, focused study session tracker that helps students overcome procrastination.
+> A focused study session web application designed to help students overcome procrastination by making it frictionless to start, track, and complete study sessions.
 
-## What it does
+---
 
-StartStudy lets you:
-- **Add study sessions** — give each session a subject and a planned duration.
-- **Run a countdown timer** — start, pause, and resume per session.
-- **Complete sessions** — manually mark done, or the timer auto-completes at zero.
-- **See daily progress** — stats bar shows sessions today, completed count, and total study time.
-- **Persist across refreshes** — all data is stored in `localStorage`, keyed by today's date.
+## 🎯 Scope
+StartStudy directly tackles student procrastination through a distraction-free, zero-friction interface. By eliminating barriers like login walls, complicated setup, and excessive menus, students can immediately create a session, start a timer, and build study momentum.
 
-## Tech stack
+---
 
-| Layer | Choice |
-|---|---|
-| Framework | React 18 + Vite |
-| Styling | Plain CSS (dark navy + cyan theme) |
-| State | React `useState` / `useCallback` |
-| Persistence | Browser `localStorage` |
-| Deployment | Vercel |
+## 🗺️ User Journey
+1. **Open the Dashboard:** View today's date, current study stats, and active sessions.
+2. **Enter a Subject:** Type the topic or subject (e.g. "Calculus Chapter 3", "Biology Cell Division").
+3. **Select Study Duration:** Choose from focused duration intervals (5 to 120 minutes, defaulting to 25m Pomodoro).
+4. **Create a Session:** Click **+ Add** to instantly add the session to today's queue.
+5. **Start Countdown Timer:** Click **▶ Start** to initiate the countdown.
+6. **Pause or Resume:** Need a quick break or interruption? Click **⏸ Pause** and **▶ Start** at any time.
+7. **Complete Session:** Hit the green **✓** button or let the timer reach zero to automatically record it as completed.
+8. **View Today's Progress:** Review all finished sessions with completion timestamps and total study time accumulated.
 
-## Running locally
+---
 
+## ✨ Must-have Features
+- **Add Study Sessions:** Subject input and duration selection.
+- **Countdown Timer:** Live, accurate countdown timer with second-level precision.
+- **Timer Controls:** Fluid Start, Pause, and Resume state transitions.
+- **Session Completion:** Manual completion checkmark or automatic transition when the timer expires.
+- **Daily Progress Dashboard:** Real-time counters for Total Sessions, Completed Sessions, and Total Study Hours/Minutes.
+- **Local Storage Persistence:** All sessions and remaining times automatically saved to browser `localStorage` keyed per day (`startstudy-sessions-YYYY-MM-DD`).
+- **Page Refresh Safety:** Running timers safely pause on page reload so timers never silently drain or drift in the background.
+- **Responsive Interface:** Custom dark navy design with cyan/blue accents optimized for desktop, tablet, and mobile browsers.
+
+---
+
+## 🚫 Excluded Features (By Design)
+To keep the app completely focused and lightweight, StartStudy intentionally excludes:
+- No login / signup or authentication barriers
+- No AI chat assistants
+- No social feeds or public profiles
+- No competitive leaderboards
+- No intrusive notification popups
+- No bloated analytics
+
+---
+
+## 🛠️ Technology Stack
+- **Frontend Framework:** React 19 + Vite 8
+- **Styling:** Modern, vanilla CSS (responsive flexbox & grid, custom properties, dark navy palette)
+- **Language:** JavaScript (ES modules)
+- **State & Persistence:** React hooks (`useState`, `useEffect`, `useCallback`) + browser `localStorage`
+- **Version Control:** Git & GitHub
+- **Deployment:** Vercel
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm
+
+### 1. Install Dependencies
 ```bash
 npm install
-npm run dev
 ```
 
-Then open [http://localhost:5173](http://localhost:5173).
+### 2. Run Local Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## Building for production
-
+### 3. Build for Production
 ```bash
 npm run build
 ```
+Compiled production assets will be output to the `dist/` directory.
 
-Output goes to `dist/`.
-
-## Project structure
-
+### 4. Deploy to Vercel
+Deploy directly using the Vercel CLI:
+```bash
+vercel
 ```
-src/
-  App.jsx            # Root — session state, localStorage sync, CRUD handlers
-  SessionCard.jsx    # Individual session card with live countdown timer
-  AddSessionForm.jsx # Controlled form — subject input + duration picker
-  useLocalStorage.js # Generic hook: React state ↔ localStorage
-  index.css          # Full theme — dark navy, cyan/blue accents, responsive
-```
+Or push to a GitHub repository and import the repository into your [Vercel Dashboard](https://vercel.com). Vercel will automatically detect the Vite framework preset.
 
-## Design decisions
+---
 
-- **Timer survival across re-renders** — `setInterval` lives inside `useEffect` in `SessionCard`, keyed to `session.status`. Pausing or completing clears the interval cleanly.
-- **Page-refresh persistence** — `remaining` seconds are saved on every tick, so the timer resumes from exactly where it left off (status resets to `paused` on reload — the timer won't drain silently while the tab is closed).
-- **Per-day isolation** — localStorage key: `startstudy-sessions-YYYY-MM-DD`.
-
-## License
-
-MIT
+## 🏆 Success Criteria
+A student must be able to create, start, and complete a study session and see the completed session recorded successfully on their dashboard.

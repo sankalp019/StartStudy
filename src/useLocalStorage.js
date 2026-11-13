@@ -10,7 +10,7 @@ export function useLocalStorage(key, initialValue) {
       const item = localStorage.getItem(key)
       if (!item) return initialValue
       const parsed = JSON.parse(item)
-      // Freeze any running timers on cold load
+      // Freeze any running timers on cold load / page refresh
       if (Array.isArray(parsed)) {
         return parsed.map(s => s.status === 'running' ? { ...s, status: 'paused' } : s)
       }
@@ -30,4 +30,3 @@ export function useLocalStorage(key, initialValue) {
 
   return [storedValue, setStoredValue]
 }
-
