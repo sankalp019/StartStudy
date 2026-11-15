@@ -1,8 +1,17 @@
 // App.jsx – Root component for StartStudy
 import { useState, useCallback } from 'react'
 import { useLocalStorage } from './useLocalStorage'
+import Hero from './Hero'
 import AddSessionForm from './AddSessionForm'
 import SessionCard from './SessionCard'
+import {
+  LogoIcon,
+  CalendarIcon,
+  TargetIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ChevronDownIcon,
+} from './Icons'
 
 // ─── helpers ────────────────────────────────────────────────
 
@@ -12,7 +21,7 @@ function todayKey() {
 
 function formatDate(dateStr) {
   const d = new Date(dateStr + 'T00:00:00')
-  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })
+  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })
 }
 
 function totalMinutes(sessions) {
@@ -93,78 +102,156 @@ export default function App() {
   const totalHours   = (totalMins / 60).toFixed(1)
   const doneCount    = completedSessions.length
   const activeCount  = activeSessions.length
+  const completionRate = sessions.length > 0 ? Math.round((doneCount / sessions.length) * 100) : 0
 
   return (
-    <div className="app-wrapper">
-      {/* ── Header ─────────────────────────────────────── */}
+    <div className="app-container">
+      {/* ── Top Header / Brand Bar ──────────────────────── */}
       <header className="header">
         <div className="header-brand">
-          <div className="header-logo">📚</div>
-          <span className="header-title">StartStudy</span>
-        </div>
-        <span className="header-date">{formatDate(today)}</span>
-      </header>
-
-      {/* ── Stats Bar ──────────────────────────────────── */}
-      <div className="stats-bar">
-        <div className="stat-card">
-          <div className="stat-label">Sessions Today</div>
-          <div className="stat-value blue">{sessions.length}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Completed</div>
-          <div className="stat-value green">{doneCount}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">Study Time</div>
-          <div className="stat-value cyan">
-            {totalMins < 60 ? `${totalMins}m` : `${totalHours}h`}
+          <div className="header-logo-badge">
+            <LogoIcon size={20} />
+          </div>
+          <div className="header-brand-info">
+            <span className="header-title">StartStudy</span>
+            <span className="header-tagline">Focus &amp; Study Dashboard</span>
           </div>
         </div>
-      </div>
+        <div className="header-date-pill">
+          <CalendarIcon size={13} className="header-date-icon" />
+          <span className="header-date-text">{formatDate(today)}</span>
+        </div>
+      </header>
 
-      {/* ── Add Session ────────────────────────────────── */}
+      {/* ── Hero Welcome Section ────────────────────────── */}
+      <Hero />
+
+      {/* ── Stats Dashboard Bar ─────────────────────────── */}
+      <section className="stats-dashboard" aria-label="Study Statistics">
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-label">Sessions Today</span>
+            <span className="stat-icon-wrapper stat-icon-blue">
+              <TargetIcon size={16} />
+            </span>
+          </div>
+          <div className="stat-value-group">
+            <span className="stat-value stat-value-blue">{sessions.length}</span>
+            <span className="stat-subtext">
+              {activeCount > 0 ? `${activeCount} in progress` : '0 active'}
+            </span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-label">Completed</span>
+            <span className="stat-icon-wrapper stat-icon-green">
+              <CheckCircleIcon size={16} />
+            </span>
+          </div>
+          <div className="stat-value-group">
+            <span className="stat-value stat-value-green">{doneCount}</span>
+            <span className="stat-subtext">
+              {sessions.length > 0 ? `${completionRate}% rate` : 'Ready to start'}
+            </span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-header">
+            <span className="stat-label">Study Time</span>
+            <span className="stat-icon-wrapper stat-icon-cyan">
+              <ClockIcon size={16} />
+            </span>
+          </div>
+          <div className="stat-value-group">
+            <span className="stat-value stat-value-cyan">
+              {totalMins < 60 ? `${totalMins}m` : `${totalHours}h`}
+            </span>
+            <span className="stat-subtext">
+              {doneCount > 0 ? `${totalMins} min logged` : 'Target: 25m+'}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Add Session Form Panel ──────────────────────── */}
       <AddSessionForm onAdd={handleAdd} />
 
-      {/* ── Active Sessions ────────────────────────────── */}
-      <p className="section-title">
-        Today's Sessions{activeCount > 0 ? ` (${activeCount})` : ''}
-      </p>
-
-      {activeSessions.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🎯</div>
-          <h3>No active sessions</h3>
-          <p>Add a session above to get started.</p>
+      {/* ── Active Sessions Section ─────────────────────── */}
+      <section className="sessions-section" aria-label="Active Sessions">
+        <div className="section-header">
+          <div className="section-title-group">
+            <h2 className="section-heading">Today's Sessions</h2>
+            {activeCount > 0 && (
+              <span className="section-count-badge">{activeCount} active</span>
+            )}
+          </div>
+          <span className="section-meta-hint">
+            {activeCount === 0
+              ? 'No sessions running'
+              : `${activeCount} session${activeCount > 1 ? 's' : ''} to complete`}
+          </span>
         </div>
-      ) : (
-        <div className="sessions-list">
-          {activeSessions.map(session => (
-            <SessionCard
-              key={session.id}
-              session={session}
-              onTick={handleTick}
-              onToggleTimer={handleToggleTimer}
-              onComplete={handleComplete}
-              onDelete={handleDelete}
-            />
-          ))}
-        </div>
-      )}
 
-      {/* ── Completed Sessions ─────────────────────────── */}
+        {activeSessions.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-visual">
+              <div className="empty-ring" />
+              <div className="empty-icon-wrap">
+                <TargetIcon size={24} className="empty-icon" />
+              </div>
+            </div>
+            <h3 className="empty-title">No active study sessions</h3>
+            <p className="empty-desc">
+              Ready to build momentum? Add a subject and duration above to start your first focus sprint.
+            </p>
+            <div className="empty-tip">
+              <span className="tip-dot" />
+              <span>Tip: Starting with just 15 or 25 minutes makes overcoming procrastination effortless.</span>
+            </div>
+          </div>
+        ) : (
+          <div className="sessions-list">
+            {activeSessions.map(session => (
+              <SessionCard
+                key={session.id}
+                session={session}
+                onTick={handleTick}
+                onToggleTimer={handleToggleTimer}
+                onComplete={handleComplete}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ── Completed Sessions Section ──────────────────── */}
       {completedSessions.length > 0 && (
-        <div className="completed-section">
+        <section className="completed-section" aria-label="Completed Sessions">
           <button
-            className="completed-toggle"
+            type="button"
+            className="completed-accordion-btn"
             onClick={() => setShowCompleted(v => !v)}
+            aria-expanded={showCompleted}
           >
-            <span className={`toggle-chevron ${showCompleted ? 'open' : ''}`}>▲</span>
-            Completed ({doneCount})
+            <div className="accordion-left">
+              <CheckCircleIcon size={16} className="accordion-icon" />
+              <span className="accordion-title">Completed Today</span>
+              <span className="completed-count-pill">{doneCount}</span>
+            </div>
+            <div className="accordion-right">
+              <span className="accordion-subtext">{totalMins} min completed</span>
+              <span className={`accordion-chevron ${showCompleted ? 'chevron-open' : ''}`}>
+                <ChevronDownIcon size={15} />
+              </span>
+            </div>
           </button>
 
           {showCompleted && (
-            <div className="sessions-list">
+            <div className="sessions-list completed-list">
               {completedSessions.map(session => (
                 <SessionCard
                   key={session.id}
@@ -177,8 +264,13 @@ export default function App() {
               ))}
             </div>
           )}
-        </div>
+        </section>
       )}
+
+      {/* ── Subtle SaaS Footer ──────────────────────────── */}
+      <footer className="app-footer">
+        <span>StartStudy · Designed for distraction-free focus</span>
+      </footer>
     </div>
   )
 }
